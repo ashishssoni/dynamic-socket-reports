@@ -1,0 +1,115 @@
+/* Container for the entire dashboard page */
+.container {
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: #ffffff;
+  color: #333;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Header styling */
+.header {
+  font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2980b9;
+}
+
+/* Card containing user info and reports */
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  margin-top: 20px;
+  color: #333;
+  border-left: 5px solid #3498db;
+}
+
+/* Button group - Stack buttons vertically with margin */
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Adds space between the buttons */
+  align-items: center; /* Align buttons to the center */
+  margin-top: 20px;
+}
+
+/* Generate Reports button style */
+.generateReportButton {
+  background-color: #4caf50; /* Green background */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.generateReportButton:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* Your Reports button style */
+.reportsButton {
+  background-color: #007bff; /* Blue background */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.reportsButton:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Error message styling */
+.error {
+  color: red;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Styling for user data display */
+.card h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.card p {
+  font-size: 18px;
+  color: #7f8c8d;
+  margin-bottom: 10px;
+}
+
+/* Logout button styling */
+.logoutButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logoutButton:hover {
+  background-color: #c0392b;
+}

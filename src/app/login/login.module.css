@@ -1,0 +1,89 @@
+.header {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: navy; /* Change to a blue accent color */
+  margin-bottom: 2rem;
+  margin-top: -2rem; /* Move it closer to the top */
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f7f7f7;
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  color: black;
+}
+
+.input:focus {
+  border-color: #0070f3;
+  box-shadow: 0 0 5px rgba(0, 112, 243, 0.5);
+}
+
+.button {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background-color: #005bb5;
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.hint {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 1rem;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}

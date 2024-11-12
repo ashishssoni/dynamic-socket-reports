@@ -1,0 +1,3 @@
+export const RATE_LIMITER_CONSTANTS = {
+  USER_LOGIN: 'USER_LOGIN',
+};

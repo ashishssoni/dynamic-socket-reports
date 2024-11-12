@@ -1,0 +1,102 @@
+/* General Container */
+.container {
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #2980b9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Reports Card */
+.reportsCard {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.reportsTitle {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+/* Table Styling */
+.reportsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.reportsTable th,
+.reportsTable td {
+  padding: 12px 20px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.reportsTable th {
+  background-color: #f8f9fa;
+  color: #3498db;
+}
+
+.reportsTable tr:hover {
+  background-color: #f9fafb;
+}
+
+.reportLink {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.reportLink:hover {
+  text-decoration: underline;
+}
+
+/* Button Styling */
+.downloadButton {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.downloadButton:hover {
+  background-color: #45a049;
+}
+
+.noReports {
+  text-align: center;
+  font-size: 18px;
+  color: #e74c3c;
+  margin-top: 50px;
+}
+
+/* Error Message Styling */
+.error {
+  background-color: #f8d7da;
+  color: #c0392b;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+}

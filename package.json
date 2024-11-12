@@ -1,0 +1,70 @@
+{
+  "name": "dynamic-socket-reports",
+  "description": "Dynamic Spreadsheet Report Generation with Real-Time Socket Notification",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "next-dev": "next dev",
+    "dev": "NODE_OPTIONS=\"--max_old_space_size=4096\" next dev",
+    "dev-turbo": "next dev --turbo",
+    "build": "NODE_OPTIONS=\"--max_old_space_size=7168\" next build",
+    "start": "concurrently \"next start\" \"npm run start-websocket\"",
+    "start-next": "next start",
+    "start-websocket": "node ./init-websocket.js",
+    "lint": "next lint",
+    "lintfix": "next lint --fix",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Ashish Soni",
+    "email": "ashishssoni01@gmail.com"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cookies-next": "^2.1.1",
+    "dayjs": "^1.11.13",
+    "dompurify": "^3.2.0",
+    "helmet": "^8.0.0",
+    "jsdom": "^25.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.1",
+    "multer": "^1.4.5-lts.1",
+    "next": "15.0.3",
+    "next-connect": "^0.13.0",
+    "rate-limiter-flexible": "^3.0.3",
+    "react": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "redis": "^4.6.10",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "tailwind-merge": "^2.5.2",
+    "websocket": "^1.0.34",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "autoprefixer": "^10.4.14",
+    "concurrently": "^8.0.1",
+    "eslint": "^8.0.1",
+    "eslint-config-next": "15.0.3",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.10",
+    "prettier": "^2.3.2",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.0.4"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "eslint . --fix",
+      "git add ."
+    ]
+  }
+}
