@@ -13,7 +13,7 @@ export const formatCsrfCookie = (
     expires: Date;
   };
 } => {
-  const key = 'snapsight_csrf';
+  const key = 'app_csrf';
   return {
     key,
     value: csrfToken,

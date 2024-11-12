@@ -19,7 +19,7 @@ const LoginPage = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.status) {
+      if (!response.ok) {
         const errorData = await response.json();
         console.error('Error from backend:', errorData);
         const errorMessage = errorData.message || 'Login failed. Please check your credentials.';
@@ -33,7 +33,7 @@ const LoginPage = () => {
         },
       });
 
-      if (!csrfResponse.status) {
+      if (!csrfResponse.ok) {
         const csrfErrorData = await csrfResponse.json();
         const csrfErrorMessage = csrfErrorData.message || 'Failed to fetch CSRF token.';
         throw new Error(csrfErrorMessage);
@@ -46,6 +46,7 @@ const LoginPage = () => {
     } catch (error: any) {
       console.error('error:', error);
       setError(error.message);
+      router.push('/login');
     }
   };
 

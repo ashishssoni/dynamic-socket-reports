@@ -2,21 +2,24 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import jwt from 'jsonwebtoken';
 import { NextHandler } from 'next-connect';
 import { ErrorHandler } from '../handlers';
-// import { accessTokenProviders, userCompanyProviders } from '../providers';
 import { pushLogs } from '../utils';
+import { AccessToken } from '../database/models';
+import dayjs from 'dayjs';
+import { formatErrorMessages } from '../configs';
+import { ERROR_CODE } from '../constants';
 
 export const validateUserToken = async (
   req: NextApiRequest,
   _res: NextApiResponse,
   next: NextHandler,
 ) => {
-  const userCookieKey = 'snapsight_ai_auth';
+  const userCookieKey = 'app_ai_auth';
   let jwtToken: string = null;
 
   if (req.cookies && req.cookies[userCookieKey]) {
     jwtToken = req.cookies[userCookieKey];
   } else {
-    throw new ErrorHandler(403, 'No Token provided');
+    throw new ErrorHandler(403, formatErrorMessages('token', ERROR_CODE.INVALID));
   }
 
   try {
@@ -24,13 +27,17 @@ export const validateUserToken = async (
 
     const { identifier } = payload;
 
-    // const userTokenData = await accessTokenProviders.findAccessToken(jwtToken);
+    const userTokenData = await AccessToken.findOne(
+      {
+        token: jwtToken,
+        expireIn: { $gt: dayjs().format() },
+      },
+      { _id: 0, token: 1, identifier: 1 },
+    ).sort({ createdAt: 'desc' });
 
-    // if (!userTokenData || userTokenData.identifier !== identifier) {
-    //   throw new ErrorHandler(403, 'Invalid Token');
-    // }
-
-    // const userCompanyData = await userCompanyProviders.getUserCompany(identifier, ['companyId']);
+    if (!userTokenData || userTokenData.identifier !== identifier) {
+      throw new ErrorHandler(403, formatErrorMessages('token', ERROR_CODE.INVALID));
+    }
 
     req['locals'] = { identifier, token: jwtToken };
 

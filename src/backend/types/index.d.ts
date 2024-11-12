@@ -3,7 +3,7 @@ import { AttendeeProject, Companies } from '../db/mysql/models';
 
 interface INextApiRequest extends NextApiRequest {
   locals: {
-    identifier: number;
+    identifier: string;
     token: string;
   };
 }

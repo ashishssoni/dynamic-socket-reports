@@ -5,8 +5,7 @@ import { setCookie } from 'cookies-next';
 import jwt from 'jsonwebtoken';
 import dayjs from 'dayjs';
 import { AUTH_CONFIG } from '../configs/authConfig';
-// import { accessTokenProviders } from '../providers';
-// import { AccessTokens } from '../db/mysql/models';
+import connectMongo, { AccessToken } from '../database/models';
 
 const encrypted = new Encryption(process.env.ENCRYPTION_KEY);
 
@@ -48,9 +47,14 @@ const getCsrfToken = async (req: INextApiRequest, res: NextApiResponse): Promise
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
 
-  // const updateData = { csrfToken };
+  const updateData = { csrfToken };
 
-  // await accessTokenProviders.updateAccessToken(token, { ...updateData } as AccessTokens);
+  await connectMongo();
+
+  await AccessToken.updateOne(
+    { token, expireIn: { $gt: dayjs().format() } },
+    { $set: { ...updateData } },
+  );
 
   return csrfToken;
 };

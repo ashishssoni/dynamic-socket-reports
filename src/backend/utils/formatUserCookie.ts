@@ -1,5 +1,4 @@
 export const formatUserCookie = (
-  type: string,
   token: string,
   tokenExpirationInMinutes: number,
   expireIn: string,
@@ -16,7 +15,7 @@ export const formatUserCookie = (
   };
 } => {
   const expireInMinute = tokenExpirationInMinutes;
-  const key = type === 'admin' ? 'snapsight_ai_auth' : 'snapsight_attendee_auth';
+  const key = 'app_ai_auth';
   return {
     key,
     value: token,
