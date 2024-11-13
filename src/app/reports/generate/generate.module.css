@@ -206,3 +206,22 @@
 .backButton:focus {
   outline: none;
 }
+
+.columnText {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Style for the header part */
+.columnText strong {
+  font-weight: bold;
+  margin-right: 5px; /* Adds space between the header and path */
+}
+
+/* Style for the path part */
+.columnPath {
+  font-style: italic; /* Makes the path italic to differentiate it */
+  color: #555; /* Slightly muted color for the path */
+}

@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './reports.module.css';
+import { useRouter } from 'next/navigation';
 
 const ReportsPage = () => {
   const [reports, setReports] = useState<any[]>([]);
   const [error, setError] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const sampleReports = [
@@ -63,6 +65,10 @@ const ReportsPage = () => {
       });
   };
 
+  const handleGoBack = () => {
+    router.push('/dashboard'); // Navigate to the Dashboard route
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>Generated Reports</h1>
@@ -109,6 +115,10 @@ const ReportsPage = () => {
           <p>No reports available at the moment.</p>
         </div>
       )}
+
+      <button onClick={handleGoBack} className={styles.backButton}>
+        Go Back to Dashboard
+      </button>
     </div>
   );
 };

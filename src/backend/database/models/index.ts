@@ -6,6 +6,9 @@ import { ErrorHandler, LogHandler } from '@/backend/handlers';
 import { formatErrorMessages } from '@/backend/configs';
 import { ERROR_CODE } from '@/backend/constants';
 import { AccessToken } from './accessTokens';
+import { Customer } from './customers';
+import { Transaction } from './transactions';
+import { Account } from './accounts';
 
 const logHandler = new LogHandler();
 
@@ -44,4 +47,4 @@ async function connectMongo() {
 
 export default connectMongo;
 
-export { AccessToken };
+export { AccessToken, Customer, Account, Transaction };

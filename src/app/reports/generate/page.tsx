@@ -57,24 +57,23 @@ const GenerateReportPage = () => {
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/generate-report`, {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
         },
-        body: JSON.stringify(config), // Send the current config
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data?.message === 'Report is being generated') {
-          setSuccess(true);
-          alert('Report is being generated!');
-          router.push('/dashboard'); // Redirect after report generation is triggered
-        } else {
-          throw new Error('Unexpected response from the server.');
-        }
-      } else {
+      if (!response.ok) {
         throw new Error('Failed to generate report.');
+      }
+      const data = await response.json();
+      if (data?.message === 'Report is being generated') {
+        setSuccess(true);
+        alert('Report is being generated!');
+        router.push('/dashboard'); // Redirect after report generation is triggered
+      } else {
+        throw new Error('Unexpected response from the server.');
       }
     } catch (error: any) {
       console.error('Error generating report:', error);
@@ -190,8 +189,9 @@ const GenerateReportPage = () => {
         <div className={styles.columnsList}>
           {config.columns.map((column: any, index: number) => (
             <div key={index} className={styles.columnItem}>
-              <span>
-                {column.header} ({column.path})
+              <span className={styles.columnText}>
+                <strong>{column.header} :</strong>{' '}
+                <span className={styles.columnPath}>{column.path}</span>
               </span>
               <button
                 onClick={() => handleRemoveColumn(index)}
