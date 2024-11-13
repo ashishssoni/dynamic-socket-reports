@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { NextHandler } from 'next-connect';
 import { ErrorHandler } from '../handlers';
 import { pushLogs } from '../utils';
-import { AccessToken } from '../database/models';
+import connectMongo, { AccessToken } from '../database/models';
 import dayjs from 'dayjs';
 import { formatErrorMessages } from '../configs';
 import { ERROR_CODE } from '../constants';
@@ -26,6 +26,8 @@ export const validateUserToken = async (
     const payload: any = await jwt.verify(jwtToken, process.env.JWT_SECRET_KEY);
 
     const { identifier } = payload;
+
+    await connectMongo();
 
     const userTokenData = await AccessToken.findOne(
       {

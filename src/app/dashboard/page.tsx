@@ -3,11 +3,27 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './dashboard.module.css';
+import useSocket from '../../hooks/useSocket';
 
 const UserDashboard = () => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+
+  const { isReportReady, acknowledgeReportReady, downloadReport } = useSocket();
+
+  useEffect(() => {
+    if (isReportReady) {
+      setShowNotificationPopup(true);
+    }
+  }, [isReportReady]);
+
+  const handleCloseNotificationPopup = () => {
+    setShowNotificationPopup(false);
+    acknowledgeReportReady();
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -87,6 +103,21 @@ const UserDashboard = () => {
         </div>
       ) : (
         <p>Loading user data...</p>
+      )}
+
+      {showNotificationPopup && ( // Popup for download
+        <div className={styles.notificationPopup}>
+          <div className={styles.notificationContent}>
+            <p>Your report is ready!</p>
+            <button onClick={downloadReport} className={styles.downloadButton}>
+              Download Report
+            </button>
+            <button onClick={handleCloseNotificationPopup} className={styles.closeButton}>
+              {' '}
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

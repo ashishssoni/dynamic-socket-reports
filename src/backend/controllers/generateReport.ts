@@ -3,8 +3,10 @@ import { INextApiRequest } from '../types';
 import XLSX from 'xlsx';
 import connectMongo, { Customer } from '../database/models';
 import { nanoIdGenerator } from '../utils';
+import { NextApiResponse } from 'next';
 
-const generateReport = async (req: INextApiRequest) => {
+const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
+  const io = res.socket['server'].io;
   const { identifier } = req.locals;
   const reportsConfig = JSON.parse(fs.readFileSync('data/configs/report-config.json', 'utf-8'));
 
@@ -56,47 +58,84 @@ const generateReport = async (req: INextApiRequest) => {
 
   console.log('aggregationPipeline', aggregationPipeline);
 
-  const data = await Customer.aggregate(aggregationPipeline);
+  // Start a non-blocking task for aggregation
+  setTimeout(() => {
+    setImmediate(async () => {
+      const data = await Customer.aggregate(aggregationPipeline);
 
-  console.log('data', data);
+      console.log('data', data);
 
-  const formattedData = data.map((row) => {
-    const formattedRow = {};
-    reportsConfig.columns.forEach((column) => {
-      let value;
-
-      try {
-        value = column.path.split('.').reduce((acc, curr) => acc[curr], row);
-
-        if (column.formatter) {
-          if (column.formatter === 'arrayJoin') {
-            value = Array.isArray(value) ? value.join(', ') : value;
+      const formattedData = data.map((row) => {
+        const formattedRow = {};
+        reportsConfig.columns.forEach((column) => {
+          let value;
+          try {
+            value = column.path.split('.').reduce((acc, curr) => acc[curr], row);
+            if (column.formatter && column.formatter === 'arrayJoin') {
+              value = Array.isArray(value) ? value.join(', ') : value;
+            }
+          } catch (error) {
+            console.error(`Path Invalid ${column.path}`);
+            value = undefined;
           }
-        }
-      } catch (error) {
-        console.error(`Path Invalid ${column.path}`);
-        value = undefined;
-      }
+          formattedRow[column.header] = value;
+        });
+        return formattedRow;
+      });
 
-      formattedRow[column.header] = value;
+      console.log('formattedData', formattedData);
+
+      const finalFilename = `Report_${nanoIdGenerator(6)}.xlsx`;
+      const reportsPath = `data/output/${finalFilename}`;
+
+      const worksheet = XLSX.utils.json_to_sheet(formattedData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, reportsConfig.reportName || 'Report');
+      XLSX.writeFile(workbook, reportsPath);
+
+      io.emit('reportReady', { filename: finalFilename, message: 'Report generation completed!' });
+
+      console.log('Report generated successfully!');
     });
-    return formattedRow;
-  });
+  }, 5000);
+
+  return true;
+};
+
+const getReports = async (req: INextApiRequest) => {
+  const { identifier } = req.locals;
+
+  await connectMongo();
+
+  const data = [];
+
+  // console.log('data', data);
+
+  const formattedData = data.map((row) => {});
 
   console.log('formattedData', formattedData);
 
-  const finalFilename = `Report_${nanoIdGenerator(6)}.xlsx`;
-  const reportsPath = `data/output/${finalFilename}`;
+  return formattedData;
+};
 
-  const worksheet = XLSX.utils.json_to_sheet(formattedData);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, reportsConfig.reportName || 'Report');
-  XLSX.writeFile(workbook, reportsPath);
-  console.log('Report generated successfully!');
+const downloadReport = async (req: INextApiRequest, res: NextApiResponse) => {
+  const { fileName } = req.body;
 
-  return data;
+  const filePath = `data/output/${fileName}`;
+
+  const generatedFile = fs.readFileSync(filePath);
+
+  res.setHeader('Content-disposition', `attachment; filename=${fileName}`);
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  );
+
+  return res.send(generatedFile);
 };
 
 export const generateReportControllers = {
   generateReport,
+  getReports,
+  downloadReport,
 };

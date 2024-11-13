@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './generate.module.css';
+import useSocket from '../../../hooks/useSocket';
 
 const GenerateReportPage = () => {
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,22 @@ const GenerateReportPage = () => {
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const router = useRouter();
 
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+
+  const { isReportReady, acknowledgeReportReady, downloadReport } = useSocket();
+
   const csrfToken = localStorage.getItem('csrfToken');
+
+  useEffect(() => {
+    if (isReportReady) {
+      setShowNotificationPopup(true);
+    }
+  }, [isReportReady]);
+
+  const handleCloseNotificationPopup = () => {
+    setShowNotificationPopup(false);
+    acknowledgeReportReady();
+  };
 
   useEffect(() => {
     // Fetch the existing report-config from the backend on load
@@ -56,7 +72,7 @@ const GenerateReportPage = () => {
     setUpdateSuccess(false);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/generate-report`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/report/generate`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -67,14 +83,8 @@ const GenerateReportPage = () => {
       if (!response.ok) {
         throw new Error('Failed to generate report.');
       }
-      const data = await response.json();
-      if (data?.message === 'Report is being generated') {
-        setSuccess(true);
-        alert('Report is being generated!');
-        router.push('/dashboard'); // Redirect after report generation is triggered
-      } else {
-        throw new Error('Unexpected response from the server.');
-      }
+
+      setSuccess(true);
     } catch (error: any) {
       console.error('Error generating report:', error);
       setError(error.message || 'Failed to generate the report.');
@@ -145,6 +155,14 @@ const GenerateReportPage = () => {
       <h1 className={styles.header}> Generate Report </h1>
 
       {error && <div className={styles.error}>{error}</div>}
+
+      {isReportReady && (
+        <div className={styles.notification}>
+          Report is ready! Please download it.
+          <button onClick={acknowledgeReportReady}>Dismiss</button>
+        </div>
+      )}
+
       {success && (
         <div className={styles.success}>Report is being generated. Please check back later.</div>
       )}
@@ -219,6 +237,20 @@ const GenerateReportPage = () => {
           </div>
         )}
       </div>
+      {showNotificationPopup && ( // Popup for download
+        <div className={styles.notificationPopup}>
+          <div className={styles.notificationContent}>
+            <p>Your report is ready!</p>
+            <button onClick={downloadReport} className={styles.downloadButton}>
+              Download Report
+            </button>
+            <button onClick={handleCloseNotificationPopup} className={styles.closeButton}>
+              {' '}
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
