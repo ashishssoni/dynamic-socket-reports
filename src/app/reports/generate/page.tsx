@@ -1,4 +1,3 @@
-// /app/reports/generate/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -8,16 +7,53 @@ import styles from './generate.module.css';
 const GenerateReportPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [config, setConfig] = useState<any>({ columns: [] }); // The current report config
+  const [newColumn, setNewColumn] = useState({ header: '', path: '' }); // For new columns
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
   const router = useRouter();
 
+  const csrfToken = localStorage.getItem('csrfToken');
+
   useEffect(() => {
-    // Perform any necessary actions when the page loads
-    console.log('Generate Report Page Loaded');
+    // Fetch the existing report-config from the backend on load
+    const fetchReportConfig = async () => {
+      try {
+        if (!csrfToken) {
+          setError('Authentication failed. Please log in again.');
+          router.push('/login');
+          return;
+        }
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/report-config`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': csrfToken,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch report config.');
+        }
+
+        const data = await response.json();
+
+        setConfig(data.reportsConfig);
+      } catch (error) {
+        console.error('Error fetching config:', error);
+      }
+    };
+
+    fetchReportConfig();
   }, []);
 
   const handleGenerateReport = async () => {
     setLoading(true);
     setError('');
+    setSuccess(false);
+    setUpdateSuccess(false);
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/generate-report`, {
@@ -25,30 +61,97 @@ const GenerateReportPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify(config), // Send the current config
       });
 
       if (response.ok) {
-        alert('Report is being generated!');
-        router.push('/dashboard'); // Redirect after report generation is triggered
+        const data = await response.json();
+        if (data?.message === 'Report is being generated') {
+          setSuccess(true);
+          alert('Report is being generated!');
+          router.push('/dashboard'); // Redirect after report generation is triggered
+        } else {
+          throw new Error('Unexpected response from the server.');
+        }
       } else {
         throw new Error('Failed to generate report.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating report:', error);
-      setError('Failed to generate the report.');
+      setError(error.message || 'Failed to generate the report.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddColumn = () => {
+    if (newColumn.header && newColumn.path) {
+      setConfig((prevConfig: any) => ({
+        ...prevConfig,
+        columns: [...prevConfig.columns, newColumn],
+      }));
+      setNewColumn({ header: '', path: '' }); // Reset the input fields
+      setUnsavedChanges(true);
+    } else {
+      setError('Please fill out both the column header and path.');
+    }
+  };
+
+  const handleRemoveColumn = (index: number) => {
+    setConfig((prevConfig: any) => ({
+      ...prevConfig,
+      columns: prevConfig.columns.filter((_, i) => i !== index),
+    }));
+    setUnsavedChanges(true);
+  };
+
+  const handleUpdateConfig = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/report-config`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+        body: JSON.stringify(config),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update configuration.');
+      }
+
+      setUpdateSuccess(true);
+      setTimeout(() => {
+        setFadeOut(true); // Start fading out
+      }, 2000);
+
+      setUnsavedChanges(false);
+
+      setTimeout(() => {
+        setUpdateSuccess(false);
+        setFadeOut(false);
+      }, 4000);
+    } catch (error) {
+      console.error('Error updating config:', error);
+      setError('Failed to update configuration.');
+    }
+  };
+
+  const handleGoBack = () => {
+    router.push('/dashboard'); // Navigate to the Dashboard route
   };
 
   return (
     <div className={styles.container}>
       <h1 className={styles.header}> Generate Report </h1>
 
-      {error && <div className={styles.error}> {error} </div>}
+      {error && <div className={styles.error}>{error}</div>}
+      {success && (
+        <div className={styles.success}>Report is being generated. Please check back later.</div>
+      )}
 
       <div className={styles.card}>
-        <p>Click the button below to generate the report.</p>
+        <p>Click the button below to generate the report with the selected configuration.</p>
         <button
           className={styles.generateReportButton}
           onClick={handleGenerateReport}
@@ -56,6 +159,65 @@ const GenerateReportPage = () => {
         >
           {loading ? 'Generating...' : 'Generate Report'}
         </button>
+
+        <br />
+        <button onClick={handleGoBack} className={styles.backButton}>
+          Go Back to Dashboard
+        </button>
+      </div>
+
+      <div className={styles.configCard}>
+        <h2>Update Report Configuration</h2>
+
+        <div className={styles.configInputs}>
+          <input
+            type="text"
+            placeholder="Column Header"
+            value={newColumn.header}
+            onChange={(e) => setNewColumn({ ...newColumn, header: e.target.value })}
+          />
+          <input
+            type="text"
+            placeholder="Path (e.g., user.name)"
+            value={newColumn.path}
+            onChange={(e) => setNewColumn({ ...newColumn, path: e.target.value })}
+          />
+          <button onClick={handleAddColumn} className={styles.addColumnButton}>
+            Add Column
+          </button>
+        </div>
+
+        <div className={styles.columnsList}>
+          {config.columns.map((column: any, index: number) => (
+            <div key={index} className={styles.columnItem}>
+              <span>
+                {column.header} ({column.path})
+              </span>
+              <button
+                onClick={() => handleRemoveColumn(index)}
+                className={styles.removeColumnButton}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {unsavedChanges && (
+          <div className={styles.unsavedChanges}>
+            <p>There are unsaved changes!</p>
+          </div>
+        )}
+
+        <button onClick={handleUpdateConfig} className={styles.updateConfigButton}>
+          {loading ? 'Updating...' : 'Update Configuration'}
+        </button>
+
+        {updateSuccess && (
+          <div className={`${styles.success} ${fadeOut ? styles.fadeOut : ''}`}>
+            Updated successfully
+          </div>
+        )}
       </div>
     </div>
   );

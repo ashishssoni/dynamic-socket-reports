@@ -28,7 +28,7 @@ const UserDashboard = () => {
           },
         });
 
-        if (!response.status) {
+        if (!response.ok) {
           throw new Error('Failed to fetch user data');
         }
 
