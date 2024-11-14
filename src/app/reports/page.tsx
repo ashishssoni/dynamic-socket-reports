@@ -136,6 +136,39 @@ const ReportsPage = () => {
     }
   };
 
+  const handleConfigDownload = async (fileName: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/report-config/download`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': localStorage.getItem('csrfToken'),
+          },
+          body: JSON.stringify({ fileName }),
+        },
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const modifiedFilename = fileName.split('.')[0];
+      link.href = url;
+      link.setAttribute('download', `${modifiedFilename}_report_config.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading:', error);
+      setError('Error downloading report.');
+    }
+  };
+
   const handleGoBack = () => {
     router.push('/dashboard');
   };
@@ -173,7 +206,8 @@ const ReportsPage = () => {
                 <th>File Name</th>
                 <th>Created At</th>
                 <th>Created By</th>
-                <th>Download</th>
+                <th>File</th>
+                <th>Report Config</th>
               </tr>
             </thead>
             <tbody>
@@ -186,6 +220,14 @@ const ReportsPage = () => {
                     <button
                       className={styles.downloadButton}
                       onClick={() => handleDownload(report.fileName)}
+                    >
+                      Download
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      className={styles.downloadButton}
+                      onClick={() => handleConfigDownload(report.fileName)}
                     >
                       Download
                     </button>

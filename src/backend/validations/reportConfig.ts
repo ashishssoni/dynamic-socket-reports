@@ -24,6 +24,26 @@ const updateReportConfigValidation = async (
   }
 };
 
+const downloadReportConfigSchema = Joi.object().keys({
+  fileName: Joi.string().required().max(50),
+});
+
+const downloadReportConfigValidation = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  next: NextHandler,
+) => {
+  let data = sanitizeContent(req.body);
+  try {
+    data = await downloadReportConfigSchema.validateAsync(data);
+    req.body = data;
+    next();
+  } catch (error) {
+    return formatJoiError(req, res, error as ValidationError);
+  }
+};
+
 export const reportConfigValidation = {
   updateReportConfigValidation,
+  downloadReportConfigValidation,
 };
