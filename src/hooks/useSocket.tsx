@@ -35,6 +35,11 @@ const useSocket = () => {
       setReportFilename(filename);
     });
 
+    socket.on('reportFailed', (data) => {
+      console.log('Report Not Found', data.message);
+      setError(data.message);
+    });
+
     socket.on('configUpdated', (data) => {
       console.log('Configuration updated', data);
       setConfigUpdated(data);

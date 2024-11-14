@@ -4,7 +4,7 @@ const port = parseInt(process.env.REDIS_PORT) || 6379;
 
 export const redisClient = createClient({
   disableOfflineQueue: true,
-  url: `redis://${process.env.REDIS_HOST}:${port}`,
+  url: `redis://${process.env.REDIS_HOST || 'redis'}:${port}`,
 });
 
 redisClient.on('error', (err) => console.log('Redis Client Error', err)).connect();

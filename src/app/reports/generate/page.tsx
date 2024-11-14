@@ -27,7 +27,10 @@ const GenerateReportPage = () => {
     configUpdated: reportConfig,
   } = useSocket();
 
-  const csrfToken = localStorage.getItem('csrfToken');
+  let csrfToken = null;
+  if (typeof window !== 'undefined') {
+    csrfToken = localStorage.getItem('csrfToken');
+  }
 
   useEffect(() => {
     if (isReportReady) {

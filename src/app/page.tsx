@@ -7,9 +7,9 @@ const Home = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('jwt');
+    const token = localStorage.getItem('csrfToken');
     if (token) {
-      router.push('/reports'); // Redirect to Reports Dashboard if authenticated
+      router.push('/dashboard'); // Redirect to Reports Dashboard if authenticated
     } else {
       router.push('/login'); // Redirect to Login if no token
     }

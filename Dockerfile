@@ -6,10 +6,12 @@ ENV PORT 3000
 EXPOSE 3000
 
 # Create app directory
-WORKDIR /usr/src/api
+WORKDIR /app
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
+
+RUN apk add --update --no-cache python3 build-base gcc && ln -sf /usr/bin/python3 /usr/bin/python
 
 RUN npm install
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './dashboard.module.css';
 import useSocket from '../../hooks/useSocket';
+import useConfig from '@/hooks/useConfig';
 
 const UserDashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -13,6 +14,8 @@ const UserDashboard = () => {
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
 
   const { isReportReady, acknowledgeReportReady, downloadReport } = useSocket();
+
+  useConfig();
 
   useEffect(() => {
     if (isReportReady) {

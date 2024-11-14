@@ -63,6 +63,14 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
       await connectMongo();
       const data = await Customer.aggregate(aggregationPipeline);
 
+      if (!data.length) {
+        io.emit('reportFailed', {
+          message: 'No Report Found',
+        });
+
+        return;
+      }
+
       console.log('data', data);
 
       const formattedData = data.map((row) => {
