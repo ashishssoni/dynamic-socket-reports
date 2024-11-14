@@ -237,19 +237,21 @@ const GenerateReportPage = () => {
           </div>
         )}
       </div>
-      {showNotificationPopup && ( // Popup for download
-        <div className={styles.notificationPopup}>
-          <div className={styles.notificationContent}>
-            <p>Your report is ready!</p>
-            <button onClick={downloadReport} className={styles.downloadButton}>
-              Download Report
-            </button>
-            <button onClick={handleCloseNotificationPopup} className={styles.closeButton}>
-              {' '}
-              Close
-            </button>
+      {showNotificationPopup && (
+        <>
+          <div className="overlay"></div>
+          <div className={styles.notificationPopup}>
+            <div className={styles.notificationContent}>
+              <p>Your report is ready!</p>
+              <button onClick={downloadReport} className={styles.downloadButton}>
+                Download Report
+              </button>
+              <button onClick={handleCloseNotificationPopup} className={styles.closeButton}>
+                Close
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

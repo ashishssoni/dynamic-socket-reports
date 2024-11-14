@@ -1,16 +1,15 @@
 import fs from 'fs';
 import { INextApiRequest } from '../types';
 import XLSX from 'xlsx';
-import connectMongo, { Customer } from '../database/models';
+import connectMongo, { Customer, Report } from '../database/models';
 import { nanoIdGenerator } from '../utils';
 import { NextApiResponse } from 'next';
+import { USERS } from '../constants';
 
 const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
   const io = res.socket['server'].io;
   const { identifier } = req.locals;
   const reportsConfig = JSON.parse(fs.readFileSync('data/configs/report-config.json', 'utf-8'));
-
-  await connectMongo();
 
   const aggregationPipeline = [
     { $match: { username: 'fmiller' } },
@@ -61,6 +60,7 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
   // Start a non-blocking task for aggregation
   setTimeout(() => {
     setImmediate(async () => {
+      await connectMongo();
       const data = await Customer.aggregate(aggregationPipeline);
 
       console.log('data', data);
@@ -95,6 +95,12 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
 
       io.emit('reportReady', { filename: finalFilename, message: 'Report generation completed!' });
 
+      await Report.create({
+        fileName: finalFilename,
+        userId: identifier,
+        reportConfig: reportsConfig,
+      });
+
       console.log('Report generated successfully!');
     });
   }, 5000);
@@ -107,11 +113,15 @@ const getReports = async (req: INextApiRequest) => {
 
   await connectMongo();
 
-  const data = [];
+  const reportsData = await Report.find({ userId: identifier }).sort({ createdAt: -1 }).lean();
 
-  // console.log('data', data);
+  const formattedData = reportsData.map((item) => {
+    const { userId, fileName, createdAt } = item;
 
-  const formattedData = data.map((row) => {});
+    const user = USERS.find((item) => item.id === userId);
+
+    return { fileName, userName: user.name, createdAt };
+  });
 
   console.log('formattedData', formattedData);
 

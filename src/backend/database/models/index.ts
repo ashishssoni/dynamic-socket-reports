@@ -9,6 +9,7 @@ import { AccessToken } from './accessTokens';
 import { Customer } from './customers';
 import { Transaction } from './transactions';
 import { Account } from './accounts';
+import { Report } from './reports';
 
 const logHandler = new LogHandler();
 
@@ -47,4 +48,4 @@ async function connectMongo() {
 
 export default connectMongo;
 
-export { AccessToken, Customer, Account, Transaction };
+export { AccessToken, Customer, Account, Transaction, Report };

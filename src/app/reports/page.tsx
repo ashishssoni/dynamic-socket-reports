@@ -1,72 +1,96 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import styles from './reports.module.css';
 import { useRouter } from 'next/navigation';
+import useSocket from '@/hooks/useSocket';
 
 const ReportsPage = () => {
-  const [reports, setReports] = useState<any[]>([]);
+  const [reports, setReports] = useState<
+    { fileName: string; userName: string; createdAt: string }[]
+  >([]);
   const [error, setError] = useState('');
   const router = useRouter();
 
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+
+  const { isReportReady, acknowledgeReportReady, downloadReport } = useSocket();
+
   useEffect(() => {
-    const sampleReports = [
-      {
-        _id: '1',
-        title: 'Sales Report Q1',
-        createdAt: '2024-01-15T10:30:00Z',
-        createdBy: 'admin',
-      },
-      {
-        _id: '2',
-        title: 'Sales Report Q2',
-        createdAt: '2024-04-15T10:30:00Z',
-        createdBy: 'admin',
-      },
-      {
-        _id: '3',
-        title: 'User Activity Report',
-        createdAt: '2024-07-15T10:30:00Z',
-        createdBy: 'user',
-      },
-    ];
-    setReports(sampleReports);
+    if (isReportReady) {
+      setShowNotificationPopup(true);
+    }
+  }, [isReportReady]);
 
-    // const fetchReports = async () => {
-    //   try {
-    //     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/reports`);
-    //     if (!response.ok) {
-    //       throw new Error('Failed to fetch reports');
-    //     }
-    //     const data = await response.json();
-    //     setReports(data.reports);
-    //   } catch (error) {
-    //     // console.error('Error fetching reports:', error);
-    //     // setError('Failed to fetch reports.');
-    //   }
-    // };
+  const handleCloseNotificationPopup = () => {
+    setShowNotificationPopup(false);
+    acknowledgeReportReady();
+  };
 
-    // fetchReports();
-  }, []);
+  useEffect(() => {
+    const csrfToken = localStorage.getItem('csrfToken');
 
-  const handleDownload = (reportId: string) => {
-    // Fetch the report file (e.g., in XLSX format) and trigger download
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/reports/${reportId}/download`)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `report_${reportId}.xlsx`;
-        link.click();
-      })
-      .catch((error) => {
-        console.error('Error downloading the report:', error);
+    if (!csrfToken) {
+      setError('Authentication failed. Please log in again.');
+      router.push('/login');
+      return;
+    }
+
+    const fetchReports = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/report`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': csrfToken,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch reports');
+        }
+        const data = await response.json();
+        setReports(data.reports);
+      } catch (error) {
+        console.error('Error fetching reports:', error);
+        setError('Failed to fetch reports.');
+      }
+    };
+
+    fetchReports();
+  }, [router]); // Adding router as a dependency
+
+  const handleDownload = async (fileName: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/report/download`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': localStorage.getItem('csrfToken'),
+        },
+        body: JSON.stringify({ fileName }),
       });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading:', error);
+      setError('Error downloading report.');
+    }
   };
 
   const handleGoBack = () => {
-    router.push('/dashboard'); // Navigate to the Dashboard route
+    router.push('/dashboard');
   };
 
   return (
@@ -81,7 +105,7 @@ const ReportsPage = () => {
           <table className={styles.reportsTable}>
             <thead>
               <tr>
-                <th>Name</th>
+                <th>File Name</th>
                 <th>Created At</th>
                 <th>Created By</th>
                 <th>Download</th>
@@ -89,18 +113,14 @@ const ReportsPage = () => {
             </thead>
             <tbody>
               {reports.map((report) => (
-                <tr key={report._id}>
-                  <td>
-                    <Link href={`/reports/${report._id}`} className={styles.reportLink}>
-                      {report.title}
-                    </Link>
-                  </td>
+                <tr key={report.fileName}>
+                  <td>{report.fileName}</td>
                   <td>{new Date(report.createdAt).toLocaleString()}</td>
-                  <td>{report.createdBy}</td>
+                  <td>{report.userName}</td>
                   <td>
                     <button
                       className={styles.downloadButton}
-                      onClick={() => handleDownload(report._id)}
+                      onClick={() => handleDownload(report.fileName)}
                     >
                       Download
                     </button>
@@ -119,6 +139,23 @@ const ReportsPage = () => {
       <button onClick={handleGoBack} className={styles.backButton}>
         Go Back to Dashboard
       </button>
+
+      {showNotificationPopup && (
+        <>
+          <div className="overlay"></div>
+          <div className={styles.notificationPopup}>
+            <div className={styles.notificationContent}>
+              <p>Your report is ready!</p>
+              <button onClick={downloadReport} className={styles.downloadButton}>
+                Download Report
+              </button>
+              <button onClick={handleCloseNotificationPopup} className={styles.closeButton}>
+                Close
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

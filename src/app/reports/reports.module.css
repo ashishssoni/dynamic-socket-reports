@@ -120,3 +120,74 @@
 .backButton:focus {
   outline: none;
 }
+
+.notificationPopup {
+  position: fixed; /* Or absolute, depending on your layout */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a shadow */
+  z-index: 1000; /* Ensure it's on top */
+  border: 2px solid #27ae60; /* Green border */
+}
+
+.notificationContent {
+  text-align: center; /* Center the content */
+}
+
+.downloadButton {
+  background-color: #27ae60; /* Green button */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px; /* Add some spacing */
+  cursor: pointer;
+}
+
+.downloadButton:hover {
+  background-color: #219150;
+}
+
+.closeButton {
+  background-color: #3498db; /* Blue button */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background-color: #2980b9;
+}
+
+/* Overlay background to dim the rest of the page */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 999; /* Place it just below the popup */
+}
+
+/* Animation for popup appearance */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.notificationPopup {
+  animation: popupFadeIn 0.3s ease; /* Apply animation */
+}
