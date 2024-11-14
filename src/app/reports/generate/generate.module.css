@@ -296,3 +296,20 @@
 .notificationPopup {
   animation: popupFadeIn 0.3s ease; /* Apply animation */
 }
+
+.updateMessage {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.5s ease;
+}
+
+.updateMessage.fadeOut {
+  opacity: 0;
+}

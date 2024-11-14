@@ -6,6 +6,7 @@ const useSocket = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [error, setError] = useState(null);
   const [reportFilename, setReportFilename] = useState<string | null>(null);
+  const [configUpdated, setConfigUpdated] = useState(null);
 
   const acknowledgeReportReady = useCallback(() => {
     socket?.emit('report-ready-acknowledged');
@@ -32,6 +33,11 @@ const useSocket = () => {
       console.log('Report ready received', filename);
       setIsReportReady(true);
       setReportFilename(filename);
+    });
+
+    socket.on('configUpdated', (data) => {
+      console.log('Configuration updated', data);
+      setConfigUpdated(data);
     });
 
     // Handle connection errors
@@ -81,7 +87,7 @@ const useSocket = () => {
     }
   };
 
-  return { isReportReady, acknowledgeReportReady, downloadReport, error };
+  return { isReportReady, acknowledgeReportReady, downloadReport, configUpdated, error };
 };
 
 export default useSocket;

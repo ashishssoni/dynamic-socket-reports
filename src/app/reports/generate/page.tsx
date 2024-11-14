@@ -17,8 +17,15 @@ const GenerateReportPage = () => {
   const router = useRouter();
 
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState('');
+  const [showUpdateMessage, setShowUpdateMessage] = useState(false);
 
-  const { isReportReady, acknowledgeReportReady, downloadReport } = useSocket();
+  const {
+    isReportReady,
+    acknowledgeReportReady,
+    downloadReport,
+    configUpdated: reportConfig,
+  } = useSocket();
 
   const csrfToken = localStorage.getItem('csrfToken');
 
@@ -27,6 +34,18 @@ const GenerateReportPage = () => {
       setShowNotificationPopup(true);
     }
   }, [isReportReady]);
+
+  useEffect(() => {
+    if (reportConfig) {
+      setConfig(reportConfig);
+      setUpdateMessage('The report configuration has been updated!');
+      setShowUpdateMessage(true);
+
+      setTimeout(() => {
+        setShowUpdateMessage(false);
+      }, 2000);
+    }
+  }, [reportConfig]);
 
   const handleCloseNotificationPopup = () => {
     setShowNotificationPopup(false);
@@ -234,6 +253,14 @@ const GenerateReportPage = () => {
         {updateSuccess && (
           <div className={`${styles.success} ${fadeOut ? styles.fadeOut : ''}`}>
             Updated successfully
+          </div>
+        )}
+      </div>
+      <div>
+        {/* Bottom Left Message for Config Update */}
+        {showUpdateMessage && (
+          <div className={styles.updateMessage}>
+            <p>{updateMessage}</p>
           </div>
         )}
       </div>
