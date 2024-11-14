@@ -31,6 +31,7 @@ const GenerateReportPage = () => {
 
   useEffect(() => {
     if (isReportReady) {
+      downloadReport();
       setShowNotificationPopup(true);
     }
   }, [isReportReady]);
@@ -50,6 +51,7 @@ const GenerateReportPage = () => {
   const handleCloseNotificationPopup = () => {
     setShowNotificationPopup(false);
     acknowledgeReportReady();
+    setSuccess(false);
   };
 
   useEffect(() => {
@@ -270,9 +272,6 @@ const GenerateReportPage = () => {
           <div className={styles.notificationPopup}>
             <div className={styles.notificationContent}>
               <p>Your report is ready!</p>
-              <button onClick={downloadReport} className={styles.downloadButton}>
-                Download Report
-              </button>
               <button onClick={handleCloseNotificationPopup} className={styles.closeButton}>
                 Close
               </button>

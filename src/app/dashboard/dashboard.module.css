@@ -120,7 +120,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
-  padding: 20px;
+  padding: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a shadow */
   z-index: 1000; /* Ensure it's on top */
@@ -131,21 +131,8 @@
   text-align: center; /* Center the content */
 }
 
-.downloadButton {
-  background-color: #27ae60; /* Green button */
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  margin-right: 10px; /* Add some spacing */
-  cursor: pointer;
-}
-
-.downloadButton:hover {
-  background-color: #219150;
-}
-
 .closeButton {
+  margin-top: 5px;
   background-color: #3498db; /* Blue button */
   color: white;
   padding: 10px 15px;
