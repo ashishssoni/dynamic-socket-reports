@@ -110,10 +110,28 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
 
 const getReports = async (req: INextApiRequest) => {
   const { identifier } = req.locals;
+  const { sortBy = 'createdAt', search = '', sortOrder = 'desc' } = req.query;
+
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const skip = limit * (page - 1);
+
+  const sorting: any = {
+    [sortBy as string]: (sortOrder as string).toLowerCase() === 'asc' ? 1 : -1,
+  };
 
   await connectMongo();
 
-  const reportsData = await Report.find({ userId: identifier }).sort({ createdAt: -1 }).lean();
+  const query: any = { userId: identifier };
+
+  if (search) {
+    query.fileName = { $regex: search, $options: 'i' };
+  }
+
+  const [total, reportsData] = await Promise.all([
+    Report.countDocuments(query),
+    Report.find(query).sort(sorting).skip(skip).limit(limit).lean(),
+  ]);
 
   const formattedData = reportsData.map((item) => {
     const { userId, fileName, createdAt } = item;
@@ -125,7 +143,15 @@ const getReports = async (req: INextApiRequest) => {
 
   console.log('formattedData', formattedData);
 
-  return formattedData;
+  return {
+    formattedData,
+    pagination: {
+      limit,
+      total,
+      currentPage: page,
+      totalPage: Math.ceil(total / limit),
+    },
+  };
 };
 
 const downloadReport = async (req: INextApiRequest, res: NextApiResponse) => {

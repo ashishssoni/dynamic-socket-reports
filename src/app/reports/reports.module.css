@@ -13,7 +13,6 @@
   font-size: 36px;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 40px;
   color: #2980b9;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -38,7 +37,7 @@
 .reportsTable {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .reportsTable th,
@@ -82,12 +81,19 @@
 .downloadButton:hover {
   background-color: #45a049;
 }
-
 .noReports {
   text-align: center;
-  font-size: 18px;
-  color: #e74c3c;
-  margin-top: 50px;
+  padding: 20px;
+  background-color: #f4f6f9; /* Light grey background */
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 1.2em;
+  color: #555;
+}
+
+.noReports p {
+  font-weight: 600;
+  color: #3498db; /* Blue text to make it more inviting */
 }
 
 /* Error Message Styling */
@@ -190,4 +196,110 @@
 
 .notificationPopup {
   animation: popupFadeIn 0.3s ease; /* Apply animation */
+}
+
+/* Container for the search bar */
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Styling for the search bar input */
+.searchBar {
+  width: 100%; /* Makes the input take the full width of the container */
+  padding: 12px 20px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 30px; /* Rounded corners */
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: #f8f8f8; /* Subtle background color */
+  color: #333; /* Darker text for contrast */
+  box-sizing: border-box; /* Ensures padding doesn't affect the width */
+}
+
+/* Focus styling for search input */
+.searchBar:focus {
+  border-color: #3498db; /* Blue border on focus */
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+  background-color: white; /* White background on focus */
+}
+
+/* Placeholder text color */
+.searchBar::placeholder {
+  color: #aaa; /* Lighter gray */
+}
+
+/* Optional search icon inside the input */
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 15px;
+  font-size: 18px;
+  color: #3498db;
+}
+
+/* Adjust spacing of the search input for the icon */
+.searchBar {
+  padding-left: 40px; /* Make space for the icon inside the input */
+}
+
+/* Optional: Add a clear button */
+.clearButton {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.clearButton:hover {
+  color: #e74c3c; /* Red on hover */
+}
+
+/* Pagination controls */
+.paginationControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.paginationControls button {
+  background-color: #3498db;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.paginationControls button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.paginationControls button:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.paginationControls span {
+  font-size: 1rem;
+  color: #333;
 }

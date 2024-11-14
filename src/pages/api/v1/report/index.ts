@@ -5,17 +5,21 @@ import { generateReportControllers } from '@/backend/controllers';
 import { handleError, validateCsrfToken } from '@/backend/middlewares';
 import { validateUserToken } from '@/backend/middlewares/validateUserToken';
 import { INextApiRequest } from '@/backend/types';
+import { reportValidation } from '@/backend/validations';
 
 const handler = nc({ onError: handleError });
 
+const { getReportsValidation } = reportValidation;
+
 handler.use(validateUserToken, validateCsrfToken);
 
-handler.get(async (req: INextApiRequest, res: NextApiResponse) => {
-  const reports = await generateReportControllers.getReports(req);
+handler.get(getReportsValidation, async (req: INextApiRequest, res: NextApiResponse) => {
+  const { formattedData: reports, pagination } = await generateReportControllers.getReports(req);
 
   return res.status(200).send({
     status: true,
     reports,
+    pagination,
   });
 });
 
