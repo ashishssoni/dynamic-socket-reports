@@ -37,7 +37,7 @@ const GenerateReportPage = () => {
       downloadReport();
       setTimeout(() => {
         setShowNotificationPopup(true);
-      }, 5000);
+      }, 3000);
     }
   }, [isReportReady]);
 
@@ -141,17 +141,20 @@ const GenerateReportPage = () => {
 
   const handleUpdateConfig = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/report-config`, {
+      const response: any = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/report-config`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'x-csrf-token': csrfToken,
         },
         body: JSON.stringify(config),
+      }).catch((err) => {
+        console.log('err', err);
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update configuration.');
+      if (response?.status !== 200) {
+        const { message } = await response.json();
+        throw new Error(message);
       }
 
       setUpdateSuccess(true);
@@ -165,9 +168,13 @@ const GenerateReportPage = () => {
         setUpdateSuccess(false);
         setFadeOut(false);
       }, 4000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating config:', error);
-      setError('Failed to update configuration.');
+      setError(error.message);
+
+      setTimeout(() => {
+        setError('');
+      }, 3000);
     }
   };
 
@@ -270,6 +277,9 @@ const GenerateReportPage = () => {
           </div>
         )}
       </div>
+
+      {error && <div className={styles.error}>{error}</div>}
+
       {showNotificationPopup && (
         <>
           <div className="overlay"></div>

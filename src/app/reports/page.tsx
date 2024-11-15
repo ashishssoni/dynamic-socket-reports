@@ -32,7 +32,7 @@ const ReportsPage = () => {
       downloadReport();
       setTimeout(() => {
         setShowNotificationPopup(true);
-      }, 5000);
+      }, 3000);
     }
   }, [isReportReady]);
 

@@ -45,67 +45,73 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
 
   const projectStage = generateProjectStage(reportsConfig.columns);
 
-  console.log('projectStage', projectStage);
+  const collectionNames = [...new Set(reportsConfig.columns.map((col) => col.path.split('.')[0]))];
 
-  const aggregationPipeline = [
-    // {
-    //   $match: {
-    //     username: 'fmiller',
-    //   },
-    // },
+  let aggregationPipeline: any = [
     {
       $addFields: {
-        tierDetailsArray: { $objectToArray: '$tier_and_details' },
+        tier_and_details: { $objectToArray: '$tier_and_details' },
       },
     },
-    {
-      $unwind: '$tierDetailsArray',
-    },
-    {
-      $unwind: {
-        path: '$accounts',
+  ];
+
+  if (collectionNames.includes('accounts')) {
+    aggregationPipeline = [
+      ...aggregationPipeline,
+      {
+        $unwind: {
+          path: '$accounts',
+        },
       },
-    },
-    {
-      $lookup: {
-        from: 'accounts',
-        localField: 'accounts',
-        foreignField: 'account_id',
-        as: 'accounts',
+      {
+        $lookup: {
+          from: 'accounts',
+          localField: 'accounts',
+          foreignField: 'account_id',
+          as: 'accounts',
+        },
       },
-    },
-    {
-      $unwind: {
-        path: '$accounts',
-        preserveNullAndEmptyArrays: true,
+      {
+        $unwind: {
+          path: '$accounts',
+          preserveNullAndEmptyArrays: true,
+        },
       },
-    },
-    {
-      $lookup: {
-        from: 'transactions',
-        localField: 'accounts.account_id',
-        foreignField: 'account_id',
-        as: 'transactions',
+    ];
+  }
+
+  if (collectionNames.includes('transactions')) {
+    aggregationPipeline = [
+      ...aggregationPipeline,
+      {
+        $lookup: {
+          from: 'transactions',
+          localField: 'accounts.account_id',
+          foreignField: 'account_id',
+          as: 'transactions',
+        },
       },
-    },
-    {
-      $unwind: {
-        path: '$transactions',
-        preserveNullAndEmptyArrays: true,
+      {
+        $unwind: {
+          path: '$transactions',
+          preserveNullAndEmptyArrays: true,
+        },
       },
-    },
-    {
-      $unwind: {
-        path: '$transactions.transactions',
-        preserveNullAndEmptyArrays: true,
+      {
+        $unwind: {
+          path: '$transactions.transactions',
+          preserveNullAndEmptyArrays: true,
+        },
       },
-    },
+    ];
+  }
+
+  aggregationPipeline = [
+    ...aggregationPipeline,
     {
       $project: {
         _id: 0,
         ...projectStage,
-        tier: '$tierDetailsArray.v.tier',
-        benefits: '$tierDetailsArray.v.benefits',
       },
     },
   ];
@@ -123,8 +129,6 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
         return;
       }
 
-      // console.log('data', data);
-
       const formattedData = data.map((doc) => {
         reportsConfig.columns.forEach((column) => {
           if (!doc.hasOwnProperty(column.header)) {
@@ -140,8 +144,6 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
         });
         return doc;
       });
-
-      console.log('formattedData', formattedData);
 
       const finalFilename = `Report_${nanoIdGenerator(6)}.xlsx`;
       const reportsPath = `data/output/${finalFilename}`;

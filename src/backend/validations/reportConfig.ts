@@ -4,11 +4,6 @@ import { NextHandler } from 'next-connect';
 import { formatJoiError } from '../middlewares';
 import { sanitizeContent } from '../utils/inputSanitization';
 
-// const updateReportConfigSchema = Joi.object().keys({
-//   email: Joi.string().email().required().lowercase().trim(),
-//   password: Joi.string().required().trim().max(100),
-// });
-
 const updateReportConfigValidation = async (
   req: NextApiRequest,
   res: NextApiResponse,
@@ -16,8 +11,22 @@ const updateReportConfigValidation = async (
 ) => {
   const data = sanitizeContent(req.body);
   try {
-    // data = await updateReportConfigSchema.validateAsync(data);
     req.body = data;
+
+    const validPrefixes = ['customers', 'accounts', 'transactions'];
+
+    const isValid = data.columns.every((column) => {
+      const pathPrefix = column.path.split('.')[0];
+      return validPrefixes.includes(pathPrefix);
+    });
+
+    if (!isValid) {
+      return res.status(400).json({
+        status: false,
+        message: `path should start with ${validPrefixes.join(', ')}`,
+      });
+    }
+
     next();
   } catch (error) {
     return formatJoiError(req, res, error as ValidationError);
