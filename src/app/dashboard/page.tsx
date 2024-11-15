@@ -20,7 +20,9 @@ const UserDashboard = () => {
   useEffect(() => {
     if (isReportReady) {
       downloadReport();
-      setShowNotificationPopup(true);
+      setTimeout(() => {
+        setShowNotificationPopup(true);
+      }, 5000);
     }
   }, [isReportReady]);
 
@@ -92,14 +94,11 @@ const UserDashboard = () => {
           <p>Email: {userData.email}</p>
           <p>Role: {userData.role}</p>
 
-          {/* Button group container */}
           <div className={styles.buttonGroup}>
-            {/* Generate Reports Button */}
             <button onClick={generateReport} className={styles.generateReportButton}>
               Generate Reports
             </button>
 
-            {/* Your Reports Button */}
             <button onClick={goToReports} className={styles.reportsButton}>
               Your Reports
             </button>

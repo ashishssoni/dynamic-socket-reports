@@ -9,8 +9,8 @@ const GenerateReportPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [config, setConfig] = useState<any>({ columns: [] }); // The current report config
-  const [newColumn, setNewColumn] = useState({ header: '', path: '' }); // For new columns
+  const [config, setConfig] = useState<any>({ columns: [] });
+  const [newColumn, setNewColumn] = useState({ header: '', path: '' });
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -35,7 +35,9 @@ const GenerateReportPage = () => {
   useEffect(() => {
     if (isReportReady) {
       downloadReport();
-      setShowNotificationPopup(true);
+      setTimeout(() => {
+        setShowNotificationPopup(true);
+      }, 5000);
     }
   }, [isReportReady]);
 
@@ -58,7 +60,6 @@ const GenerateReportPage = () => {
   };
 
   useEffect(() => {
-    // Fetch the existing report-config from the backend on load
     const fetchReportConfig = async () => {
       try {
         if (!csrfToken) {
@@ -105,13 +106,13 @@ const GenerateReportPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate report.');
+        throw new Error('No reports found, please check the data.');
       }
 
       setSuccess(true);
     } catch (error: any) {
       console.error('Error generating report:', error);
-      setError(error.message || 'Failed to generate the report.');
+      setError(error.message || 'No reports found, please check the data.');
     } finally {
       setLoading(false);
     }
@@ -123,7 +124,7 @@ const GenerateReportPage = () => {
         ...prevConfig,
         columns: [...prevConfig.columns, newColumn],
       }));
-      setNewColumn({ header: '', path: '' }); // Reset the input fields
+      setNewColumn({ header: '', path: '' });
       setUnsavedChanges(true);
     } else {
       setError('Please fill out both the column header and path.');
@@ -155,7 +156,7 @@ const GenerateReportPage = () => {
 
       setUpdateSuccess(true);
       setTimeout(() => {
-        setFadeOut(true); // Start fading out
+        setFadeOut(true);
       }, 2000);
 
       setUnsavedChanges(false);
@@ -171,7 +172,7 @@ const GenerateReportPage = () => {
   };
 
   const handleGoBack = () => {
-    router.push('/dashboard'); // Navigate to the Dashboard route
+    router.push('/dashboard');
   };
 
   return (

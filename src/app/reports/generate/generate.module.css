@@ -1,18 +1,16 @@
-/* Container for the generate report page */
 .container {
   margin: 0;
   padding: 20px;
   font-family: 'Arial', sans-serif;
   background-color: #ffffff;
   color: #333;
-  min-height: 100vh; /* Ensure full viewport height */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Space elements evenly */
+  justify-content: space-between;
   align-items: center;
 }
 
-/* Header styling */
 .header {
   font-size: 36px;
   font-weight: 700;
@@ -22,7 +20,6 @@
   max-width: 800px;
 }
 
-/* Card containing report generation instructions */
 .card {
   background-color: #ffffff;
   border-radius: 8px;
@@ -31,13 +28,12 @@
   color: #333;
   border-left: 5px solid #3498db;
   width: 100%;
-  max-width: 800px; /* Larger width for desktops */
+  max-width: 800px;
   text-align: center;
 }
 
-/* Generate Report button */
 .generateReportButton {
-  background-color: #4caf50; /* Green background */
+  background-color: #4caf50;
   color: white;
   padding: 12px 25px;
   margin-top: 20px;
@@ -49,10 +45,9 @@
 }
 
 .generateReportButton:hover {
-  background-color: #45a049; /* Darker green on hover */
+  background-color: #45a049;
 }
 
-/* Error message styling */
 .error {
   color: red;
   background-color: #f8d7da;
@@ -66,7 +61,6 @@
   max-width: 800px;
 }
 
-/* Success message styling */
 .success {
   color: green;
   background-color: #d4edda;
@@ -80,7 +74,6 @@
   max-width: 800px;
 }
 
-/* Configuration card for updating the report configuration */
 .configCard {
   margin-top: 30px;
   background-color: #f8f9fa;
@@ -100,11 +93,11 @@
 
 .configInputs input {
   padding: 12px 15px;
-  border: 1px solid #ccc; /* Light border */
+  border: 1px solid #ccc;
   border-radius: 5px;
   width: 200px;
-  background-color: transparent; /* Transparent background */
-  color: #333; /* Dark text color for readability */
+  background-color: transparent;
+  color: #333;
   font-size: 1rem;
 }
 
@@ -180,14 +173,12 @@
   text-align: center;
 }
 
-/* Highlight button when there are unsaved changes */
 .unsavedChangesButton {
   background-color: #ffcc00;
   border-color: #e6b800;
   color: #fff;
 }
 
-/* Style for the back button */
 .backButton {
   background-color: #007bff;
   color: white;
@@ -214,38 +205,36 @@
   margin-bottom: 10px;
 }
 
-/* Style for the header part */
 .columnText strong {
   font-weight: bold;
-  margin-right: 5px; /* Adds space between the header and path */
+  margin-right: 5px;
 }
 
-/* Style for the path part */
 .columnPath {
-  font-style: italic; /* Makes the path italic to differentiate it */
-  color: #555; /* Slightly muted color for the path */
+  font-style: italic;
+  color: #555;
 }
 
 .notificationPopup {
-  position: fixed; /* Or absolute, depending on your layout */
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
   padding: 10px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a shadow */
-  z-index: 1000; /* Ensure it's on top */
-  border: 2px solid #27ae60; /* Green border */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  border: 2px solid #27ae60;
 }
 
 .notificationContent {
-  text-align: center; /* Center the content */
+  text-align: center;
 }
 
 .closeButton {
   margin-top: 5px;
-  background-color: #3498db; /* Blue button */
+  background-color: #3498db;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -257,18 +246,16 @@
   background-color: #2980b9;
 }
 
-/* Overlay background to dim the rest of the page */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-  z-index: 999; /* Place it just below the popup */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
 }
 
-/* Animation for popup appearance */
 @keyframes popupFadeIn {
   from {
     opacity: 0;
@@ -281,7 +268,7 @@
 }
 
 .notificationPopup {
-  animation: popupFadeIn 0.3s ease; /* Apply animation */
+  animation: popupFadeIn 0.3s ease;
 }
 
 .updateMessage {

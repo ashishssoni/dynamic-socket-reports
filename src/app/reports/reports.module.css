@@ -1,4 +1,3 @@
-/* General Container */
 .container {
   margin: 0 auto;
   padding: 20px;
@@ -8,7 +7,6 @@
   min-height: 100vh;
 }
 
-/* Header */
 .header {
   font-size: 36px;
   font-weight: 700;
@@ -18,7 +16,6 @@
   letter-spacing: 1px;
 }
 
-/* Reports Card */
 .reportsCard {
   background-color: #fff;
   padding: 20px;
@@ -33,7 +30,6 @@
   margin-bottom: 20px;
 }
 
-/* Table Styling */
 .reportsTable {
   width: 100%;
   border-collapse: collapse;
@@ -66,7 +62,6 @@
   text-decoration: underline;
 }
 
-/* Button Styling */
 .downloadButton {
   background-color: #4caf50;
   color: white;
@@ -84,7 +79,7 @@
 .noReports {
   text-align: center;
   padding: 20px;
-  background-color: #f4f6f9; /* Light grey background */
+  background-color: #f4f6f9;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   font-size: 1.2em;
@@ -93,10 +88,9 @@
 
 .noReports p {
   font-weight: 600;
-  color: #3498db; /* Blue text to make it more inviting */
+  color: #3498db;
 }
 
-/* Error Message Styling */
 .error {
   background-color: #f8d7da;
   color: #c0392b;
@@ -128,25 +122,25 @@
 }
 
 .notificationPopup {
-  position: fixed; /* Or absolute, depending on your layout */
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
   padding: 10px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a shadow */
-  z-index: 1000; /* Ensure it's on top */
-  border: 2px solid #27ae60; /* Green border */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  border: 2px solid #27ae60;
 }
 
 .notificationContent {
-  text-align: center; /* Center the content */
+  text-align: center;
 }
 
 .closeButton {
   margin-top: 5px;
-  background-color: #3498db; /* Blue button */
+  background-color: #3498db;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -158,18 +152,16 @@
   background-color: #2980b9;
 }
 
-/* Overlay background to dim the rest of the page */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-  z-index: 999; /* Place it just below the popup */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
 }
 
-/* Animation for popup appearance */
 @keyframes popupFadeIn {
   from {
     opacity: 0;
@@ -182,10 +174,9 @@
 }
 
 .notificationPopup {
-  animation: popupFadeIn 0.3s ease; /* Apply animation */
+  animation: popupFadeIn 0.3s ease;
 }
 
-/* Container for the search bar */
 .searchContainer {
   display: flex;
   justify-content: center;
@@ -196,33 +187,29 @@
   margin: 0 auto;
 }
 
-/* Styling for the search bar input */
 .searchBar {
-  width: 100%; /* Makes the input take the full width of the container */
+  width: 100%;
   padding: 12px 20px;
   font-size: 16px;
   border: 2px solid #ddd;
-  border-radius: 30px; /* Rounded corners */
+  border-radius: 30px;
   outline: none;
   transition: all 0.3s ease;
-  background-color: #f8f8f8; /* Subtle background color */
-  color: #333; /* Darker text for contrast */
-  box-sizing: border-box; /* Ensures padding doesn't affect the width */
+  background-color: #f8f8f8;
+  color: #333;
+  box-sizing: border-box;
 }
 
-/* Focus styling for search input */
 .searchBar:focus {
-  border-color: #3498db; /* Blue border on focus */
+  border-color: #3498db;
   box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-  background-color: white; /* White background on focus */
+  background-color: white;
 }
 
-/* Placeholder text color */
 .searchBar::placeholder {
-  color: #aaa; /* Lighter gray */
+  color: #aaa;
 }
 
-/* Optional search icon inside the input */
 .searchBarWrapper {
   display: flex;
   align-items: center;
@@ -237,12 +224,10 @@
   color: #3498db;
 }
 
-/* Adjust spacing of the search input for the icon */
 .searchBar {
-  padding-left: 40px; /* Make space for the icon inside the input */
+  padding-left: 40px;
 }
 
-/* Optional: Add a clear button */
 .clearButton {
   position: absolute;
   right: 15px;
@@ -255,10 +240,9 @@
 }
 
 .clearButton:hover {
-  color: #e74c3c; /* Red on hover */
+  color: #e74c3c;
 }
 
-/* Pagination controls */
 .paginationControls {
   display: flex;
   justify-content: center;

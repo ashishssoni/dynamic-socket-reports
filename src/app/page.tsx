@@ -9,13 +9,13 @@ const Home = () => {
   useEffect(() => {
     const token = localStorage.getItem('csrfToken');
     if (token) {
-      router.push('/dashboard'); // Redirect to Reports Dashboard if authenticated
+      router.push('/dashboard');
     } else {
-      router.push('/login'); // Redirect to Login if no token
+      router.push('/login');
     }
   }, [router]);
 
-  return null; // No need to render anything since this page redirects
+  return null;
 };
 
 export default Home;

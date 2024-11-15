@@ -4,11 +4,9 @@ import { stripmoduleUrlFromUrl } from './stripModuleFromUrl';
 
 const logHandler = new LogHandler();
 
-export const pushLogs = (req: NextApiRequest, data: any, namespace = 'SPARK') => {
+export const pushLogs = (req: NextApiRequest, data: any, namespace = 'APP') => {
   try {
     const headers = { ...req.headers };
-    const projectId = req.query.projectId || req.body.projectId || '';
-    const companyId = data.companyId || req.query.companyId || req.body.companyId;
 
     const body = { ...req.body };
 
@@ -42,8 +40,6 @@ export const pushLogs = (req: NextApiRequest, data: any, namespace = 'SPARK') =>
       query: req.query,
       body,
       method: req.method,
-      companyId,
-      projectId,
       module: moduleUrl,
       headers: { ...headers, authorization },
       clientIp: req.headers['x-forwarded-for'] || req.socket.remoteAddress,

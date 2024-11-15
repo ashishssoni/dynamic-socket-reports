@@ -7,4 +7,3 @@ export * from './encryption';
 export * from './csrfToken';
 export * from './pushLogs';
 export * from './stripModuleFromUrl';
-export * from './stripRiskyCharacters';

@@ -13,8 +13,8 @@ const ReportsPage = () => {
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 5,
-    sortBy: 'createdAt', // Default sort field
-    sortOrder: 'desc', // Default sort order
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
     total: 0,
     totalPages: 0,
   });
@@ -30,7 +30,9 @@ const ReportsPage = () => {
   useEffect(() => {
     if (isReportReady) {
       downloadReport();
-      setShowNotificationPopup(true);
+      setTimeout(() => {
+        setShowNotificationPopup(true);
+      }, 5000);
     }
   }, [isReportReady]);
 
@@ -43,9 +45,9 @@ const ReportsPage = () => {
     if (search.length >= 3 || search === '') {
       const timeoutId = setTimeout(() => {
         setDebouncedSearch(search);
-      }, 500); // Adjust debounce time as needed (500ms here)
+      }, 500);
 
-      return () => clearTimeout(timeoutId); // Cleanup the timeout on each search input change
+      return () => clearTimeout(timeoutId);
     }
   }, [search]);
 
@@ -97,7 +99,6 @@ const ReportsPage = () => {
   useEffect(() => {
     fetchReports();
   }, [pagination.page, pagination.limit, pagination.sortBy, pagination.sortOrder, debouncedSearch]);
-  // Adding router as a dependency
 
   const handlePageChange = (newPage: number) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
@@ -105,7 +106,7 @@ const ReportsPage = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    setPagination({ ...pagination, page: 1 }); // Reset to first page on new search
+    setPagination({ ...pagination, page: 1 });
   };
 
   const handleDownload = async (fileName: string) => {

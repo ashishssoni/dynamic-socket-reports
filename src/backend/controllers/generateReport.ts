@@ -4,31 +4,84 @@ import XLSX from 'xlsx';
 import connectMongo, { Customer, Report } from '../database/models';
 import { nanoIdGenerator } from '../utils';
 import { NextApiResponse } from 'next';
-import { USERS } from '../constants';
+import { ERROR_CODE, USERS } from '../constants';
+import { ErrorHandler } from '../handlers';
+import { formatErrorMessages } from '../configs';
 
 const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
   const io = res.socket['server'].io;
   const { identifier } = req.locals;
   const reportsConfig = JSON.parse(fs.readFileSync('data/configs/report-config.json', 'utf-8'));
 
+  await connectMongo();
+
+  const customers = await Customer.countDocuments();
+  if (!customers) {
+    throw new ErrorHandler(400, formatErrorMessages('reports', ERROR_CODE.NOT_FOUND));
+  }
+
+  const convertObjectIdToString = (obj) => {
+    if (obj instanceof Object && obj.constructor.name === 'ObjectId') {
+      return obj.toString();
+    }
+
+    if (Array.isArray(obj) && obj.length) {
+      return obj.join(', ');
+    }
+    return obj;
+  };
+
+  const cleanPath = (path) => {
+    return path.startsWith('customers.') ? path.replace('customers.', '') : path;
+  };
+
+  const generateProjectStage = (columns) => {
+    const projectStage = {};
+    columns.forEach((column) => {
+      projectStage[column.header] = `$${cleanPath(column.path)}`;
+    });
+    return projectStage;
+  };
+
+  const projectStage = generateProjectStage(reportsConfig.columns);
+
+  console.log('projectStage', projectStage);
+
   const aggregationPipeline = [
-    { $match: { username: 'fmiller' } },
+    // {
+    //   $match: {
+    //     username: 'fmiller',
+    //   },
+    // },
+    {
+      $addFields: {
+        tierDetailsArray: { $objectToArray: '$tier_and_details' },
+      },
+    },
+    {
+      $unwind: '$tierDetailsArray',
+    },
+    {
+      $unwind: {
+        path: '$accounts',
+      },
+    },
     {
       $lookup: {
-        // Join with accounts
         from: 'accounts',
-        localField: 'accounts', // accounts is an array of account IDs in customers collection
+        localField: 'accounts',
         foreignField: 'account_id',
         as: 'accounts',
       },
     },
     {
-      $unwind: '$accounts', // Unwind the accounts array to create separate documents for each account
+      $unwind: {
+        path: '$accounts',
+        preserveNullAndEmptyArrays: true,
+      },
     },
-
     {
       $lookup: {
-        // Join with transactions (after unwinding accounts)
         from: 'transactions',
         localField: 'accounts.account_id',
         foreignField: 'account_id',
@@ -36,31 +89,30 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
       },
     },
     {
-      // Deconstruct transactions array as we want one transaction in one row
       $unwind: {
         path: '$transactions',
-        preserveNullAndEmptyArrays: true, // Important: keep customers even if no transactions
+        preserveNullAndEmptyArrays: true,
       },
     },
-
     {
-      // Deconstruct transactions.transactions array (the actual transactions)
-
       $unwind: {
         path: '$transactions.transactions',
         preserveNullAndEmptyArrays: true,
       },
     },
-
-    // ... (rest of your aggregation pipeline)
+    {
+      $project: {
+        _id: 0,
+        ...projectStage,
+        tier: '$tierDetailsArray.v.tier',
+        benefits: '$tierDetailsArray.v.benefits',
+      },
+    },
   ];
 
-  console.log('aggregationPipeline', aggregationPipeline);
-
-  // Start a non-blocking task for aggregation
+  // Non-blocking task for aggregation
   setTimeout(() => {
     setImmediate(async () => {
-      await connectMongo();
       const data = await Customer.aggregate(aggregationPipeline);
 
       if (!data.length) {
@@ -71,24 +123,22 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
         return;
       }
 
-      console.log('data', data);
+      // console.log('data', data);
 
-      const formattedData = data.map((row) => {
-        const formattedRow = {};
+      const formattedData = data.map((doc) => {
         reportsConfig.columns.forEach((column) => {
-          let value;
-          try {
-            value = column.path.split('.').reduce((acc, curr) => acc[curr], row);
-            if (column.formatter && column.formatter === 'arrayJoin') {
-              value = Array.isArray(value) ? value.join(', ') : value;
-            }
-          } catch (error) {
-            console.error(`Path Invalid ${column.path}`);
-            value = undefined;
+          if (!doc.hasOwnProperty(column.header)) {
+            doc[column.header] = null;
           }
-          formattedRow[column.header] = value;
+          doc[column.header] = convertObjectIdToString(doc[column.header]);
         });
-        return formattedRow;
+
+        Object.keys(doc).forEach((key) => {
+          if (!reportsConfig.columns.some((col) => col.header === key)) {
+            delete doc[key]; // Delete keys not in reportConfig
+          }
+        });
+        return doc;
       });
 
       console.log('formattedData', formattedData);
@@ -111,7 +161,7 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
 
       console.log('Report generated successfully!');
     });
-  }, 5000);
+  }, 0);
 
   return true;
 };
@@ -148,8 +198,6 @@ const getReports = async (req: INextApiRequest) => {
 
     return { fileName, userName: user.name, createdAt };
   });
-
-  console.log('formattedData', formattedData);
 
   return {
     formattedData,

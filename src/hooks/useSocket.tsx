@@ -10,7 +10,7 @@ const useSocket = () => {
 
   const acknowledgeReportReady = useCallback(() => {
     socket?.emit('report-ready-acknowledged');
-    setIsReportReady(false); // Reset the flag immediately
+    setIsReportReady(false);
   }, [socket]);
 
   useEffect(() => {
@@ -27,7 +27,6 @@ const useSocket = () => {
       console.log('Connected to socket server');
     });
 
-    // Listen for the 'reportReady' event
     socket.on('reportReady', (data) => {
       const filename = typeof data === 'string' ? data : data.filename;
       console.log('Report ready received', filename);
@@ -45,13 +44,11 @@ const useSocket = () => {
       setConfigUpdated(data);
     });
 
-    // Handle connection errors
     socket.on('connect_error', (err) => {
       setError('Failed to connect to the WebSocket');
       console.error('WebSocket error:', err);
     });
 
-    // Clean up the socket connection on unmount
     return () => {
       socket.disconnect();
       setSocket(null);
@@ -87,7 +84,6 @@ const useSocket = () => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading:', error);
-      // handle error
       setError('Error downloading report.');
     }
   };

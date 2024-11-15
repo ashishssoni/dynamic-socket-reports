@@ -99,12 +99,19 @@ After completing these steps, the application should be ready to use. Open a web
 For testing, you can use the following login credentials:
 
 - **Email**: john@test.com  
-  **Password**: 123456789
+  **Password**: Test@123
 
 - **Email**: adam@test.com  
-  **Password**: 123456
+  **Password**: Test@12345
 
-## Running the Application (On Local)
+# Local Setup Instructions
+
+## Prerequisites
+Before running the application locally, make sure you have the following installed:
+- Node.js
+- npm
+
+## Steps to Run Locally
 
 ### Setting up the Environment
 
@@ -128,9 +135,11 @@ For testing, you can use the following login credentials:
    npm run start
    ```
 
+After completing these steps, the application should be ready to use. Open a web browser and go to http://localhost:3000 to access the app.
+
 ### Running in Development Mode
 
-If you prefer to use development mode, follow these steps:
+If you prefer to use development/nodemon mode, follow these steps:
 
 1. **Start the Development Server**
    ```bash
@@ -138,7 +147,7 @@ If you prefer to use development mode, follow these steps:
    ```
 
 2. **Start the WebSocket Server**
-  after starting the server use to connect to websocket:
+  For nodemon mode: After starting the server use to connect to websocket:
    ```bash
    npm run start-websocket
    ```
