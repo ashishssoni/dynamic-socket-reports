@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { INextApiRequest } from '../types';
 import XLSX from 'xlsx';
 import connectMongo, { Customer, Report } from '../database/models';
@@ -119,7 +120,30 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
   // Non-blocking task for aggregation
   setTimeout(() => {
     setImmediate(async () => {
-      const data = await Customer.aggregate(aggregationPipeline);
+      const accumulatedData = [];
+      const generateReportChunked = async (aggregationPipeline, chunkSize = 10000) => {
+        let offset = 0;
+        let hasMoreData = true;
+
+        while (hasMoreData) {
+          const dataChunk = await Customer.aggregate([
+            ...aggregationPipeline,
+            { $skip: offset },
+            { $limit: chunkSize },
+          ]);
+
+          if (dataChunk.length < chunkSize) {
+            hasMoreData = false;
+          }
+
+          accumulatedData.push(...dataChunk);
+          offset += chunkSize;
+        }
+
+        return accumulatedData;
+      };
+
+      const data = await generateReportChunked(aggregationPipeline);
 
       if (!data.length) {
         io.emit('reportFailed', {
@@ -153,12 +177,56 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
       const finalFilename = `Report_${nanoIdGenerator(6)}.xlsx`;
       const reportsPath = `data/output/${finalFilename}`;
 
-      const worksheet = XLSX.utils.json_to_sheet(formattedData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, reportsConfig.reportName || 'Report');
-      XLSX.writeFile(workbook, reportsPath);
+      const generateExcelInChunks = async (formattedData) => {
+        const chunkSize = 10000;
+        const chunks = Math.ceil(formattedData.length / chunkSize);
+        let currentChunk = 0;
 
-      io.emit('reportReady', { filename: finalFilename, message: 'Report generation completed!' });
+        const workbook = XLSX.utils.book_new();
+
+        const generateChunk = () => {
+          const chunk = formattedData.slice(
+            currentChunk * chunkSize,
+            (currentChunk + 1) * chunkSize,
+          );
+
+          const worksheet = XLSX.utils.json_to_sheet(chunk);
+
+          const sheetName = `${reportsConfig.reportName || 'Report'}_${currentChunk + 1}`;
+
+          XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+
+          if (currentChunk === chunks - 1) {
+            XLSX.writeFile(workbook, reportsPath);
+
+            io.emit('reportReady', {
+              filename: finalFilename,
+              message: 'Report generation completed!',
+            });
+          }
+
+          currentChunk += 1;
+          if (currentChunk < chunks) {
+            setTimeout(generateChunk, 0);
+          }
+        };
+        generateChunk();
+      };
+
+      await generateExcelInChunks(formattedData);
+
+      // NOTE: If want data in single page
+      /*
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, reportsConfig.reportName || 'Report');
+        XLSX.writeFile(workbook, reportsPath);
+
+        io.emit('reportReady', {
+          filename: finalFilename,
+          message: 'Report generation completed!',
+        });
+      */
 
       await Report.create({
         fileName: finalFilename,
@@ -220,9 +288,10 @@ const getReports = async (req: INextApiRequest) => {
 const downloadReport = async (req: INextApiRequest, res: NextApiResponse) => {
   const { fileName } = req.body;
 
-  const filePath = `data/output/${fileName}`;
-
-  const generatedFile = fs.readFileSync(filePath);
+  const filePath = path.resolve('data/output', fileName);
+  if (!fs.existsSync(filePath)) {
+    throw new ErrorHandler(400, formatErrorMessages('file', ERROR_CODE.NOT_FOUND));
+  }
 
   res.setHeader('Content-disposition', `attachment; filename=${fileName}`);
   res.setHeader(
@@ -230,7 +299,13 @@ const downloadReport = async (req: INextApiRequest, res: NextApiResponse) => {
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   );
 
-  return res.send(generatedFile);
+  const fileStream = fs.createReadStream(filePath);
+  fileStream.pipe(res);
+
+  fileStream.on('error', (err) => {
+    console.error('Error streaming file:', err);
+    throw new ErrorHandler(400, 'Failed to download file');
+  });
 };
 
 export const generateReportControllers = {

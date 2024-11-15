@@ -73,7 +73,23 @@ const useSocket = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const blob = await response.blob();
+      const contentLength = +response.headers.get('Content-Length');
+      let receivedLength = 0;
+      const chunks = [];
+
+      const reader = response.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        chunks.push(value);
+        receivedLength += value.length;
+
+        const progress = (receivedLength / contentLength) * 100;
+        console.log(`Download progress: ${progress.toFixed(2)}%`);
+      }
+
+      const blob = new Blob(chunks);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -82,6 +98,8 @@ const useSocket = () => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
+
+      localStorage.setItem('showNotification', 'true');
     } catch (error) {
       console.error('Error downloading:', error);
       setError('Error downloading report.');
