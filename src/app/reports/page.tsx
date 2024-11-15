@@ -28,11 +28,22 @@ const ReportsPage = () => {
   const { isReportReady, acknowledgeReportReady, downloadReport } = useSocket();
 
   useEffect(() => {
-    if (isReportReady) {
-      downloadReport();
-      setTimeout(() => {
+    const initiateDownload = async () => {
+      try {
+        await downloadReport();
         setShowNotificationPopup(true);
-      }, 3000);
+      } catch (error) {
+        console.error('Error during report download:', error);
+        setError('Error in Generating Reports');
+
+        setTimeout(() => {
+          setError('');
+        }, 3000);
+      }
+    };
+
+    if (isReportReady) {
+      initiateDownload();
     }
   }, [isReportReady]);
 
@@ -272,7 +283,7 @@ const ReportsPage = () => {
           <div className="overlay"></div>
           <div className={styles.notificationPopup}>
             <div className={styles.notificationContent}>
-              <p>Your report is ready!</p>
+              <p>Your report is ready. The download has started!</p>
               <button onClick={handleCloseNotificationPopup} className={styles.closeButton}>
                 Close
               </button>

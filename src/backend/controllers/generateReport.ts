@@ -139,7 +139,7 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
 
         Object.keys(doc).forEach((key) => {
           if (!reportsConfig.columns.some((col) => col.header === key)) {
-            delete doc[key]; // Delete keys not in reportConfig
+            delete doc[key];
           }
         });
         return doc;
