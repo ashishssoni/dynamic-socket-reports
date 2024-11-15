@@ -25,11 +25,24 @@ This command will spin up three services:
 - **Mongo**: The MongoDB instance
 - **Redis**: The Redis server
 
+After a successful build, the console output you provided indicates the following sequence of events in your application:
+```
+app-1    | [0]  ✓ Ready in 1215ms
+app-1    | [0] Redis Client Connected
+app-1    | [1] Attempting to reconnect 1
+app-1    | [0] 2024-11-15 11:26:25.676 - info: Setting up socket
+app-1    | [1] npm run start-websocket exited with code 0
+```
+
 ### Step 2: Load Sample Data into MongoDB
 
 #### 1. Copy Data Files into MongoDB Container
 
-Make sure you’re in the project repository where the sample data files are located. To locate the MongoDB container ID, use:
+
+Make sure to **check out the project repository** first, as we need the **exact path** to the `sample_data` folder within your project. Once you've done that, you can proceed to **locate the MongoDB container ID**. 
+
+To find the container ID for your MongoDB instance, you can run the following command:
+
 ```bash
 docker ps
 ```
@@ -43,6 +56,8 @@ docker cp ./sample_data/transactions.json <container-id>:/tmp/transactions.json
 
 **Sample Input**:
 ```plaintext
+pwd: /Users/ashish/Downloads/others/code/dynamic-socket-reports
+
 docker cp ./sample_data/accounts.json c77e21dc4406:/tmp/accounts.json
 ```
 
@@ -53,7 +68,7 @@ Successfully copied 305kB to c77e21dc4406:/tmp/accounts.json
 
 #### 2. Import Data into MongoDB
 
-Access the MongoDB container’s shell:
+Access the MongoDB container’s shell with MongoDB container ID from `docker ps` :
 ```bash
 docker exec -it <container-id> bash
 ```
@@ -80,7 +95,7 @@ connected to: mongodb://localhost/
 
 To verify the imported data:
 1. Exit the current shell by typing `exit`.
-2. Open a MongoDB shell:
+2. Open a MongoDB shell with mongo container ID:
    ```bash
    docker exec -it <container-id> mongo
    ```
@@ -89,6 +104,19 @@ To verify the imported data:
    use dynamic-reports
    show collections
    ```
+
+**Sample Output**:
+```
+> use dynamic-reports
+switched to db dynamic-reports
+
+> show collections
+accesstokens
+accounts
+customers
+reports
+transactions
+```
 
 ## Running the Application
 
@@ -102,7 +130,7 @@ For testing, you can use the following login credentials:
   **Password**: Test@123
 
 - **Email**: adam@test.com  
-  **Password**: Test@12345
+  **Password**: Login@321
 
 # Local Setup Instructions
 
