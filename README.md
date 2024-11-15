@@ -182,7 +182,14 @@ If you prefer to use development/nodemon mode, follow these steps:
 
 ## Notes
 
-- The `.env` file contains configuration details and environment variables, such as database connection URLs, JWT secrets, etc.
-- For real-time notifications, ensure WebSocket connections are set up properly in the frontend.
-- To check `data` folder and execute commands inside the app container, open a shell session using containerId:
-`docker exec -it <container-id> sh`
+- For **Low-Level Design (LLD)** documentation, refer to the `documentation.md` file.
+- The `.env` file contains configuration details and environment variables such as:
+  - Database connection URLs
+  - JWT secrets
+  - Port configurations, etc.
+- Ensure **WebSocket connections** are correctly set up in the frontend for real-time notifications.
+- To access the `data` folder or execute commands inside the app container, you can open a shell session by using the following command:
+  ```
+  docker exec -it <container-id> sh
+  ```
+  Replace `<container-id>` with the actual container ID.
