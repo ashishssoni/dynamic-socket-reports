@@ -46,4 +46,11 @@ export class Encryption {
 
     return decipher.update(encrypted) + decipher.final('utf8');
   }
+
+  createHash(data: string) {
+    const shasum = crypto.createHash('sha256');
+    shasum.update(JSON.stringify(data));
+    const hash = shasum.digest('base64');
+    return Buffer.from(hash).toString('base64');
+  }
 }

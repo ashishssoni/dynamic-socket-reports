@@ -25,16 +25,15 @@ const loginByEmail = async (req: NextApiRequest, res: NextApiResponse): Promise<
     throw new ErrorHandler(400, rateLimiterRes.message);
   }
 
-  const user = USERS.find((item) => item.email === email);
+  const user = { ...USERS.find((item) => item.email === email) };
   if (!user) {
     throw new ErrorHandler(404, formatErrorMessages('user', ERROR_CODE.NOT_FOUND));
   }
 
-  const decryptedPassword = encrypted.decrypt(user.password);
-  if (decryptedPassword !== password) {
+  const encryptedPassword = encrypted.createHash(password);
+  if (user.password !== encryptedPassword) {
     throw new ErrorHandler(404, formatErrorMessages('password', ERROR_CODE.INVALID));
   }
-  delete user.password;
 
   const tokenExpirationInMinutes = AUTH_CONFIG.userTokenExpiration;
 

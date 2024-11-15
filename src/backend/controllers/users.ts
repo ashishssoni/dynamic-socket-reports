@@ -11,9 +11,13 @@ const getUser = async (req: INextApiRequest) => {
   if (!user) {
     throw new ErrorHandler(400, formatErrorMessages('user', ERROR_CODE.NOT_FOUND));
   }
-  delete user.password;
 
-  return user;
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
 };
 
 export const userControllers = {
