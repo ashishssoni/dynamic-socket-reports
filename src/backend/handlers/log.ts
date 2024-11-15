@@ -25,21 +25,6 @@ const consoleLog = new transports.Console({
   ),
 });
 
-// Commented for now due to some issues
-/*
-const cloudWatchLog = new WinstonCloudWatch({
-  name: 'MYXP-API',
-  logGroupName: process.env.CLOUD_WATCH_LOG_GROUP_NAME,
-  logStreamName() {
-    // Spread log streams across dates as the server stays up
-    return dayjs().format('YYYY/MM/DD HH-00-00');
-  },
-  awsRegion: process.env.AWS_REGION || 'ap-southeast-1',
-  jsonMessage: true,
-  level: 'error',
-});
-*/
-
 export class LogHandler {
   logger: winston.Logger;
   constructor() {

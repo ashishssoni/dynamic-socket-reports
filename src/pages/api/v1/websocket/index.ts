@@ -4,7 +4,6 @@ import { LogHandler } from '@/backend/handlers';
 const logHandler = new LogHandler();
 
 export default function SocketHandler(_req, res) {
-  // It means that socket server was already initialised
   if (res.socket.server.io) {
     logHandler.log('Already set up');
     res.end();

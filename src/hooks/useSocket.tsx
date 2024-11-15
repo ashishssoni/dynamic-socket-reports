@@ -98,8 +98,6 @@ const useSocket = () => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-
-      localStorage.setItem('showNotification', 'true');
     } catch (error) {
       console.error('Error downloading:', error);
       setError('Error downloading report.');
