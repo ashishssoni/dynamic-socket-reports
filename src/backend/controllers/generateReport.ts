@@ -135,6 +135,11 @@ const generateReport = async (req: INextApiRequest, res: NextApiResponse) => {
             doc[column.header] = null;
           }
           doc[column.header] = convertObjectIdToString(doc[column.header]);
+
+          if (typeof doc[column.header] === 'string' && !isNaN(Number(doc[column.header]))) {
+            const parsedValue = parseFloat(doc[column.header]);
+            doc[column.header] = parsedValue.toFixed(3);
+          }
         });
 
         Object.keys(doc).forEach((key) => {

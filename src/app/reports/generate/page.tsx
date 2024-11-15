@@ -199,13 +199,6 @@ const GenerateReportPage = () => {
 
       {error && <div className={styles.error}>{error}</div>}
 
-      {isReportReady && (
-        <div className={styles.notification}>
-          Report is ready! Please download it.
-          <button onClick={acknowledgeReportReady}>Dismiss</button>
-        </div>
-      )}
-
       {success && (
         <div className={styles.success}>Report is being generated. Please check back later.</div>
       )}
