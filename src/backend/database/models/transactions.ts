@@ -27,7 +27,7 @@ const transactionSchema = new Schema<ITransaction>({
 });
 
 const transactionsSchema = new Schema<ITransactions>({
-  account_id: { type: Number, required: true },
+  account_id: { type: Number, required: true, index: true },
   transaction_count: Number,
   bucket_start_date: Date,
   bucket_end_date: Date,

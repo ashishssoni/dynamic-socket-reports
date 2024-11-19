@@ -22,7 +22,7 @@ export interface ICustomer extends Document {
 
 const tierDetailSchema = new Schema<ITierDetail>({
   tier: String,
-  id: String,
+  id: { type: String, index: true },
   active: Boolean,
   benefits: [String],
 });
@@ -33,6 +33,7 @@ const customerSchema = new Schema<ICustomer>(
       type: String,
       required: true,
       unique: true,
+      index: true,
     },
     name: String,
     address: String,

@@ -7,7 +7,7 @@ export interface IAccount extends Document {
 }
 
 const accountSchema = new Schema<IAccount>({
-  account_id: { type: Number, required: true, unique: true },
+  account_id: { type: Number, required: true, unique: true, index: true },
   limit: Number,
   products: [String],
 });
